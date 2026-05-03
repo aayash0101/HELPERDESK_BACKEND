@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 require('express-async-errors');
 const connectDB = require('./config/db');
+const { notFound, errorHandler } = require('./middleware/error');
 
 dotenv.config();
 connectDB();
@@ -18,6 +19,9 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
     res.json({ status: "API is running" });
 })
+
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
