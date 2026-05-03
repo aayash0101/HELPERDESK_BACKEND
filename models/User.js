@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bycryptjs');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema ({
     name: {
