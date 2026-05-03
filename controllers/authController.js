@@ -30,7 +30,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 };
 
 const register = async (req, res) => {
-    const {name, email, password} = req.body;
+    const {name, email, password, role} = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -38,7 +38,7 @@ const register = async (req, res) => {
         throw new Error('Email already registered');
     }
     
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ name, email, password, role });
     sendTokenResponse(user, 201, res);
 }
 
