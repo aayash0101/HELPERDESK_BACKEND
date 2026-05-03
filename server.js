@@ -4,6 +4,7 @@ const cors = require('cors');
 require('express-async-errors');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/error');
+const authRoutes = require('./routes/authRoutes');
 
 dotenv.config();
 connectDB();
@@ -15,6 +16,8 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
+
+app.use('/api/auth', authRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: "API is running" });
