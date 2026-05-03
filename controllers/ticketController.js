@@ -44,6 +44,22 @@ const addComment = async (req, res) => {
     res.json({ success: true, ticket })
 };
 
+const getAllTickets = async (req, res) => {
+    const tickets = await Ticket.find({})
+    res.status(200).json({success: true, tickets});
+};
 
-module.exports = { createTicket, getMyTickets, getTicketById, addComment };
+const updateTicket = async (req, res) => {
+
+    const { status, priority, assignedTo } = req.body
+    const ticket = await Ticket.findByIdAndUpdate(req.params.id, 
+        {status, priority, assignedTo}, 
+        {new: true, runValidators: true});
+    if (!ticket) {
+        return res.status(404).json({success: false, message: 'No tickets found'});
+    }
+    res.status(200).json({ success: true, ticket})
+}
+
+module.exports = { createTicket, getMyTickets, getTicketById, addComment, getAllTickets, updateTicket };
 
