@@ -11,23 +11,38 @@ const ticketSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['IT Support', 'Hardware', 'Software', 'Network', 'Account Access', 'Other']
+        enum: ['IT Support', 'Hardware', 'Software', 'Network', 'Account Access', 'Other'],
+        required: true
     },
     priority: {
         type: String,
         enum: ['Low', 'Medium', 'High', 'Urgent'],
-        default: 'medium'
+        default: 'Medium'
     },
     status: {
         type: String,
         enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
-        defaul: 'Open'
+        default: 'Open'
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }
-}) 
+    },
+    assignedTo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }, 
+    comments: [{
+        message: {
+            type: String,
+            required: true
+        },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
+    }]
+}, { timestamps: true });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
 module.exports = Ticket;
