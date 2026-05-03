@@ -21,14 +21,29 @@ const getMyTickets = async (req, res) => {
 const getTicketById = async (req, res) => {
     const ticket = await Ticket.findById(req.params.id);
     if (!ticket) {
-       return res.status(404).json({ success: false, message: "No tickets found" });
+        return res.status(404).json({ success: false, message: "No tickets found" });
     }
     if (ticket.createdBy.toString() !== req.user._id.toString()) {
         res.status(403);
         throw new Error('Not authorized to view this ticket');
     }
     res.status(200).json({ success: true, ticket });
-}
+};
 
-module.exports = { createTicket, getMyTickets, getTicketById };
+const addComment = async (req, res) => {
+    const ticket = await Ticket.findById(req.params.id);
+    if (!ticket) {
+        return res.status(404).json({ success: false, message: "No tickets found" });
+    }
+    if (ticket.createdBy.toString() !== req.user._id.toString()) {
+        res.status(403);
+        throw new Error('Not authorized to view this ticket');
+    }
+    ticket.comments.push({ message: req.body.message, user: req.user._id });
+    await ticket.save();
+    res.json({ success: true, ticket })
+};
+
+
+module.exports = { createTicket, getMyTickets, getTicketById, addComment };
 
