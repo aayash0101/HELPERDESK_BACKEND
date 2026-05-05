@@ -1,4 +1,5 @@
 const Ticket = require('../models/Ticket');
+const sendEmail = require('../utils/email');
 
 const createTicket = async (req, res) => {
     const { title, description, category, priority } = req.body;
@@ -31,35 +32,51 @@ const getTicketById = async (req, res) => {
 };
 
 const addComment = async (req, res) => {
-    const ticket = await Ticket.findById(req.params.id);
+    const ticket = await Ticket.findById(req.params.id).populate('createdBy', 'name email');
     if (!ticket) {
         return res.status(404).json({ success: false, message: "No tickets found" });
     }
-     if (req.user.role !== 'admin' && ticket.createdBy.toString() !== req.user._id.toString()) {
+    if (req.user.role !== 'admin' && ticket.createdBy._id.toString() !== req.user._id.toString()) {
         res.status(403);
         throw new Error('Not authorized to view this ticket');
     }
     ticket.comments.push({ message: req.body.message, user: req.user._id });
     await ticket.save();
-    res.json({ success: true, ticket })
+    await sendEmail({
+        to: ticket.createdBy.email,
+        subject: 'New comment on your ticket',
+        html: `<p>Hi ${ticket.createdBy.name},</p>
+           <p>A new comment was added to your ticket <strong>${ticket.title}</strong>.</p>`
+    });
+    res.json({ success: true, ticket }
+    )
+
 };
 
 const getAllTickets = async (req, res) => {
     const tickets = await Ticket.find({})
-    res.status(200).json({success: true, tickets});
+    res.status(200).json({ success: true, tickets });
 };
 
 const updateTicket = async (req, res) => {
 
     const { status, priority, assignedTo } = req.body
-    const ticket = await Ticket.findByIdAndUpdate(req.params.id, 
-        {status, priority, assignedTo}, 
-        {new: true, runValidators: true});
+    const ticket = await Ticket.findByIdAndUpdate(req.params.id,
+        { status, priority, assignedTo },
+        { new: true, runValidators: true }
+    ).populate('createdBy', 'name email');
+
     if (!ticket) {
-        return res.status(404).json({success: false, message: 'No tickets found'});
+        return res.status(404).json({ success: false, message: 'No tickets found' });
     }
-    res.status(200).json({ success: true, ticket})
-}
+    await sendEmail({
+        to: ticket.createdBy.email,
+        subject: 'Your ticket has been updated',
+        html: `<p>Hi ${ticket.createdBy.name},</p>
+           <p>Your ticket <strong>${ticket.title}</strong> status has been changed to <strong>${ticket.status}</strong>.</p>`
+    })
+    res.status(200).json({ success: true, ticket })
+};
 
 module.exports = { createTicket, getMyTickets, getTicketById, addComment, getAllTickets, updateTicket };
 
