@@ -31,6 +31,29 @@ const getTicketById = async (req, res) => {
     res.status(200).json({ success: true, ticket });
 };
 
+const getStats = async(req, res) => {
+    const totalTickets = await Ticket.countDocuments();
+
+    const byStatus = await Ticket.aggregate([
+        { $group: {_id: '$status', count: { $sum: 1 }}}
+    ]);
+    const byPriority = await Ticket.aggregate([
+        { $group: {_id: '$priority', count: { $sum: 1 }}}
+    ]);
+    const byCategory = await Ticket.aggregate([
+        { $group: {_id: '$category', count: { $sum: 1 }}}
+    ]);
+ 
+    res.status(200).json({
+        success:true, 
+        stats: {
+            byStatus,
+            byPriority,
+            byCategory
+        }
+    });
+};
+
 const addComment = async (req, res) => {
     const ticket = await Ticket.findById(req.params.id).populate('createdBy', 'name email');
     if (!ticket) {
