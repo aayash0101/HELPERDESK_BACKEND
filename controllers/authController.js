@@ -38,7 +38,7 @@ const register = async (req, res) => {
         throw new Error('Email already registered');
     }
     
-    const user = await User.create({ name, email, password, role });
+    const user = await User.create({ name, email, password, role: 'employee' });
     sendTokenResponse(user, 201, res);
 }
 

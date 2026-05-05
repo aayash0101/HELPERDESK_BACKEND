@@ -23,7 +23,7 @@ const getTicketById = async (req, res) => {
     if (!ticket) {
         return res.status(404).json({ success: false, message: "No tickets found" });
     }
-    if (ticket.createdBy.toString() !== req.user._id.toString()) {
+    if (req.user.role !== 'admin' && ticket.createdBy.toString() !== req.user._id.toString()) {
         res.status(403);
         throw new Error('Not authorized to view this ticket');
     }
@@ -35,7 +35,7 @@ const addComment = async (req, res) => {
     if (!ticket) {
         return res.status(404).json({ success: false, message: "No tickets found" });
     }
-    if (ticket.createdBy.toString() !== req.user._id.toString()) {
+     if (req.user.role !== 'admin' && ticket.createdBy.toString() !== req.user._id.toString()) {
         res.status(403);
         throw new Error('Not authorized to view this ticket');
     }
