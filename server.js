@@ -17,14 +17,23 @@ const allowedOrigins = [
   process.env.CLIENT_URL
 ].filter(Boolean);
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://helperdesk-frontend.vercel.app',
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (mobile apps, curl, postman)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
+    // Allow main URL, localhost, and any Vercel preview deployments
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app')  // ← allows all vercel preview URLs
+    ) {
       callback(null, true);
     } else {
-      console.log('CORS blocked:', origin); // helpful for debugging
+      console.log('CORS blocked:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
