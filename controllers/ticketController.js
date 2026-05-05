@@ -47,6 +47,7 @@ const getStats = async(req, res) => {
     res.status(200).json({
         success:true, 
         stats: {
+            totalTickets,
             byStatus,
             byPriority,
             byCategory
@@ -101,5 +102,5 @@ const updateTicket = async (req, res) => {
     res.status(200).json({ success: true, ticket })
 };
 
-module.exports = { createTicket, getMyTickets, getTicketById, addComment, getAllTickets, updateTicket };
+module.exports = { createTicket, getMyTickets, getTicketById, addComment, getAllTickets, updateTicket, getStats };
 

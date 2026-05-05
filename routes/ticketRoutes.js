@@ -1,11 +1,12 @@
 const express = require('express');
-const {createTicket, getMyTickets, getTicketById, addComment, getAllTickets, updateTicket} = require('../controllers/ticketController');
+const {createTicket, getMyTickets, getTicketById, addComment, getAllTickets, updateTicket, getStats} = require('../controllers/ticketController');
 const { protect, adminOnly } = require('../middleware/auth');
 
 const router = express.Router();
 
 router.post('/', protect, createTicket);
-router.get('/admin/all', protect, adminOnly, getAllTickets);  // ← move up
+router.get('/admin/all', protect, adminOnly, getAllTickets); 
+router.get('/admin/stats', protect, adminOnly, getStats);
 router.patch('/admin/:id', protect, adminOnly, updateTicket);
 router.get('/my', protect, getMyTickets);
 router.get('/:id', protect, getTicketById);
