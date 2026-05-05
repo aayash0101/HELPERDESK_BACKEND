@@ -17,19 +17,12 @@ const allowedOrigins = [
   process.env.CLIENT_URL
 ].filter(Boolean);
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://helperdesk-frontend.vercel.app',
-  process.env.CLIENT_URL
-].filter(Boolean);
-
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    // Allow main URL, localhost, and any Vercel preview deployments
     if (
       allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app')  // ← allows all vercel preview URLs
+      origin.endsWith('.vercel.app')
     ) {
       callback(null, true);
     } else {
